@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.PlaceCategoryDao">
+    <resultMap id="categoryResultMap" type="com.yutopia.model.dto.PlaceCategory">
+        <id property="categoryId" column="category_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="categoryName" column="category_name"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="categoryResultMap">
+        SELECT category_id, parent_id, category_name FROM place_categories ORDER BY category_id
+    </select>
+
+    <select id="findById" resultMap="categoryResultMap">
+        SELECT category_id, parent_id, category_name FROM place_categories
+        WHERE category_id = #{categoryId}
+    </select>
+
+    <select id="findByParentId" resultMap="categoryResultMap">
+        SELECT category_id, parent_id, category_name FROM place_categories
+        <where>
+            <choose>
+                <when test="parentId != null">parent_id = #{parentId}</when>
+                <otherwise>parent_id IS NULL</otherwise>
+            </choose>
+        </where>
+        ORDER BY category_id
+    </select>
+</mapper>

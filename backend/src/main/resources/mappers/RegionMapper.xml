@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.RegionDao">
+    <resultMap id="regionResultMap" type="com.yutopia.model.dto.Region">
+        <id property="regionId" column="region_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="regionName" column="region_name"/>
+        <result property="regionCode" column="region_code"/>
+        <result property="regionLevel" column="region_level"/>
+    </resultMap>
+
+    <sql id="regionColumns">
+        region_id, parent_id, region_name, region_code, region_level
+    </sql>
+
+    <select id="findAll" resultMap="regionResultMap">
+        SELECT <include refid="regionColumns"/> FROM regions ORDER BY region_id
+    </select>
+
+    <select id="findById" resultMap="regionResultMap">
+        SELECT <include refid="regionColumns"/> FROM regions WHERE region_id = #{regionId}
+    </select>
+
+    <select id="findByParentId" resultMap="regionResultMap">
+        SELECT <include refid="regionColumns"/> FROM regions
+        <where>
+            <choose>
+                <when test="parentId != null">parent_id = #{parentId}</when>
+                <otherwise>parent_id IS NULL</otherwise>
+            </choose>
+        </where>
+        ORDER BY region_id
+    </select>
+</mapper>

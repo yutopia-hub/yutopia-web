@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.PlaceDao">
+    <resultMap id="placeResultMap" type="com.yutopia.model.dto.Place">
+        <id property="placeId" column="place_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="regionId" column="region_id"/>
+        <result property="provider" column="provider"/>
+        <result property="externalId" column="external_id"/>
+        <result property="title" column="title"/>
+        <result property="address" column="address"/>
+        <result property="detailAddress" column="detail_address"/>
+        <result property="zipcode" column="zipcode"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="placeUrl" column="place_url"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="placeColumns">
+        place_id, category_id, region_id, provider, external_id, title,
+        address, detail_address, zipcode, latitude, longitude, place_url,
+        is_active, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.yutopia.model.dto.Place"
+            useGeneratedKeys="true" keyProperty="placeId" keyColumn="place_id">
+        INSERT INTO places (
+            category_id, region_id, provider, external_id, title, address,
+            detail_address, zipcode, latitude, longitude, place_url, is_active
+        ) VALUES (
+            #{categoryId,jdbcType=BIGINT}, #{regionId,jdbcType=BIGINT}, #{provider}, #{externalId},
+            #{title}, #{address,jdbcType=VARCHAR}, #{detailAddress,jdbcType=VARCHAR},
+            #{zipcode,jdbcType=VARCHAR}, #{latitude,jdbcType=DECIMAL}, #{longitude,jdbcType=DECIMAL},
+            #{placeUrl,jdbcType=VARCHAR}, COALESCE(#{isActive,jdbcType=BOOLEAN}, TRUE)
+        )
+    </insert>
+
+    <select id="findByExternalId" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/>
+        FROM places WHERE provider = #{provider} AND external_id = #{externalId}
+    </select>
+
+    <select id="findById" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/>
+        FROM places WHERE place_id = #{placeId}
+    </select>
+
+    <select id="findAll" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/> FROM places ORDER BY place_id
+    </select>
+
+    <select id="findByRegionId" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/>
+        FROM places WHERE region_id = #{regionId} ORDER BY place_id
+    </select>
+
+    <select id="findByCategoryId" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/>
+        FROM places WHERE category_id = #{categoryId} ORDER BY place_id
+    </select>
+
+    <select id="searchByTitle" resultMap="placeResultMap">
+        SELECT <include refid="placeColumns"/>
+        FROM places WHERE title LIKE CONCAT('%', #{keyword}, '%') ORDER BY place_id
+    </select>
+
+    <update id="update" parameterType="com.yutopia.model.dto.Place">
+        UPDATE places
+        SET category_id = #{categoryId,jdbcType=BIGINT}, region_id = #{regionId,jdbcType=BIGINT},
+            provider = #{provider}, external_id = #{externalId}, title = #{title},
+            address = #{address,jdbcType=VARCHAR}, detail_address = #{detailAddress,jdbcType=VARCHAR},
+            zipcode = #{zipcode,jdbcType=VARCHAR}, latitude = #{latitude,jdbcType=DECIMAL},
+            longitude = #{longitude,jdbcType=DECIMAL}, place_url = #{placeUrl,jdbcType=VARCHAR},
+            is_active = #{isActive,jdbcType=BOOLEAN}
+        WHERE place_id = #{placeId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM places WHERE place_id = #{placeId}
+    </delete>
+</mapper>

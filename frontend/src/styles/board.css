@@ -1,0 +1,711 @@
+.travel-board {
+  --bg: var(--color-bg-muted);
+  --panel: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  --ink: var(--color-text);
+  --mute: var(--color-text-muted);
+  --gold: var(--palette-bronze);
+  --yel: var(--palette-sand);
+  --sky: #8fb8c4;
+  --grn: #9cb58a;
+  --tile: var(--color-surface);
+  --side: var(--color-surface-alt);
+  --sh: var(--shadow-md);
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.travel-board * {
+  box-sizing: border-box;
+}
+.travel-board {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  overflow: hidden;
+  position: relative;
+  min-height: 52.75rem;
+  height: calc(100dvh - 3.5rem);
+}
+.travel-board #board-stage {
+  position: absolute;
+  inset: 0;
+}
+.travel-board svg#board-board {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.travel-board .panel {
+  position: absolute;
+  background: var(--panel);
+  backdrop-filter: blur(0.875rem);
+  -webkit-backdrop-filter: blur(0.875rem);
+  border-radius: 1.375rem;
+  box-shadow: var(--sh);
+  z-index: 4;
+}
+.travel-board #board-left {
+  left: 1.5rem;
+  top: 4.75rem;
+  bottom: 1.5rem;
+  width: 17rem;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease;
+}
+.travel-board #board-left .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.travel-board #board-left-toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0.0625rem solid var(--color-border);
+  border-radius: 50%;
+  background: var(--tile);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease;
+}
+.travel-board #board-left-toggle svg {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+.travel-board #board-left-toggle:hover {
+  transform: scale(1.08) rotate(-6deg);
+}
+.travel-board #board-left.collapsed {
+  width: auto !important;
+}
+.travel-board #board-left-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  margin-top: 0.25rem;
+}
+/* 접힌 상태: 토글 버튼만 남기고 슬림하게 */
+.travel-board #board-left.collapsed {
+  width: 3.875rem;
+  bottom: auto;
+  padding: 1rem;
+}
+.travel-board #board-left.collapsed h2,
+.travel-board #board-left.collapsed #board-left-body {
+  display: none;
+}
+.travel-board h2 {
+  font-family: Jua, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  margin: 0 0 0.25rem;
+}
+.travel-board .sub {
+  font-size: 0.8125rem;
+  color: var(--mute);
+  margin: 0 0 0.875rem;
+}
+.travel-board #board-list {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0.25rem 0.125rem;
+}
+.travel-board .card {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  background: var(--tile);
+  border-radius: 1rem;
+  padding: 0.5rem 0.625rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 0.125rem 0.5rem rgba(120, 100, 30, 0.1);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+.travel-board .card:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.5rem 1.125rem rgba(120, 100, 30, 0.18);
+}
+.travel-board .card .im {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.625rem;
+  flex: none;
+}
+.travel-board .card b {
+  display: block;
+  font-size: 0.875rem;
+}
+.travel-board .card small {
+  color: var(--mute);
+  font-size: 0.75rem;
+}
+.travel-board .card .hd {
+  margin-left: auto;
+  color: var(--mute);
+  letter-spacing: -0.125rem;
+  font-size: 1rem;
+}
+.travel-board .card.used {
+  display: none;
+}
+.travel-board .card.drag {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  transform: rotate(4deg) scale(1.04);
+  box-shadow: 0 1.375rem 2.5rem rgba(90, 70, 0, 0.32);
+  width: 14.75rem;
+  cursor: grabbing;
+}
+.travel-board .empty {
+  color: var(--mute);
+  font-size: 0.8125rem;
+  text-align: center;
+  padding: 1.875rem 0.5rem;
+}
+.travel-board #board-info {
+  right: 1.5rem;
+  top: 4.75rem;
+  width: 15.625rem;
+  padding: 1.125rem;
+}
+.travel-board .bar {
+  height: 0.625rem;
+  border-radius: 0.5625rem;
+  background: var(--side);
+  overflow: hidden;
+  margin: 0.625rem 0 0.875rem;
+}
+.travel-board .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--yel), var(--gold));
+  border-radius: 0.5625rem;
+  transition: width 0.5s;
+}
+.travel-board .row {
+  display: flex;
+  gap: 0.5rem;
+}
+.travel-board button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+}
+.travel-board .btn {
+  flex: 1;
+  padding: 0.625rem;
+  border-radius: 0.875rem;
+  background: var(--side);
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+.travel-board .btn.pri {
+  background: var(--gold);
+  color: #fff;
+}
+.travel-board #board-yut {
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 15.625rem;
+  padding: 1.125rem;
+  text-align: center;
+}
+.travel-board #board-roll {
+  margin-top: 0.625rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  background: var(--gold);
+  color: #fff;
+  font-family: Jua, sans-serif;
+  font-size: 1.0625rem;
+  box-shadow: 0 0.3125rem 0 var(--palette-brown);
+  transition: 0.1s;
+}
+.travel-board #board-roll:active {
+  transform: translateY(0.1875rem);
+  box-shadow: 0 0.125rem 0 var(--palette-brown);
+}
+.travel-board #board-roll:disabled {
+  background: var(--side);
+  color: var(--mute);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.travel-board #board-res {
+  height: 1.375rem;
+  margin-top: 0.5rem;
+  font-family: Jua, sans-serif;
+  color: var(--gold);
+  font-size: 1rem;
+}
+.travel-board #board-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.875rem;
+  transform: translate(-50%, 1.875rem);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 0.75rem 1.25rem;
+  border-radius: 1.875rem;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: 0.3s;
+  z-index: 60;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.travel-board #board-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.travel-board #board-ready {
+  position: absolute;
+  left: 50%;
+  top: 5.25rem;
+  transform: translate(-50%, -1.25rem);
+  font-family: Jua, sans-serif;
+  font-size: 1.5rem;
+  background: var(--yel);
+  padding: 0.625rem 1.625rem;
+  border-radius: 1.875rem;
+  box-shadow: var(--sh);
+  opacity: 0;
+  transition: 0.5s;
+  z-index: 4;
+  pointer-events: none;
+}
+.travel-board #board-ready.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.travel-board #board-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(40, 35, 10, 0.35);
+  z-index: 70;
+}
+.travel-board #board-modal.on {
+  display: grid;
+}
+.travel-board .flip {
+  width: 14.375rem;
+  height: 18.75rem;
+  perspective: 56.25rem;
+}
+.travel-board .flip > div {
+  width: 100%;
+  height: 100%;
+  border-radius: 1.5rem;
+  background: linear-gradient(160deg, #fff6c4, var(--yel));
+  box-shadow: var(--sh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 1.5rem;
+  animation: board-flip 0.7s both;
+  color: #3b3000;
+}
+.travel-board .flip .e {
+  font-size: 4rem;
+}
+.travel-board .flip b {
+  font-family: Jua, sans-serif;
+  font-size: 1.375rem;
+  font-weight: 400;
+}
+@keyframes board-flip {
+  from {
+    transform: rotateY(180deg) scale(0.7);
+  }
+  to {
+    transform: rotateY(0);
+  }
+}
+.travel-board .slot {
+  cursor: default;
+}
+.travel-board .slot .top {
+  transition:
+    transform 0.2s,
+    filter 0.2s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.travel-board .slot.hot .top {
+  fill: #fff3a8;
+  filter: drop-shadow(0 0 0.875rem #f6d84a);
+  transform: scale(1.12);
+}
+.travel-board .pop {
+  animation: board-pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+@keyframes board-pop {
+  0% {
+    transform: scale(0) translateY(1.25rem);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.travel-board .road.glow {
+  animation: board-gl 1.6s ease 1;
+}
+@keyframes board-gl {
+  0%,
+  100% {
+    stroke: #f6d84a;
+  }
+  40% {
+    stroke: #fff;
+    filter: drop-shadow(0 0 0.625rem #ffd700);
+  }
+}
+.travel-board .cloud {
+  animation: board-dr 40s linear infinite;
+}
+@keyframes board-dr {
+  from {
+    transform: translateX(-7.5rem);
+  }
+  to {
+    transform: translateX(68.75rem);
+  }
+}
+.travel-board #board-bg,
+.travel-board #board-fg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.travel-board #board-bg {
+  background: radial-gradient(ellipse at 50% 55%, #2c2f78 0%, #181b48 55%, #0a0c26 100%);
+}
+.travel-board #board-fg {
+  pointer-events: none;
+}
+.travel-board .tw {
+  animation: board-tw 3s ease-in-out infinite alternate;
+}
+@keyframes board-tw {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.travel-board .ss {
+  opacity: 0;
+  animation: board-ss 9s linear infinite;
+}
+@keyframes board-ss {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  3% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+    transform: translate(-26.25rem, 15.625rem);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-26.25rem, 15.625rem);
+  }
+}
+.travel-board .mal {
+  animation: board-mal 0.9s ease-in-out infinite alternate;
+  transform-origin: 0.75rem 1rem;
+}
+@keyframes board-mal {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+.travel-board .fl {
+  animation: board-fl 0.25s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+}
+@keyframes board-fl {
+  to {
+    transform: scaleX(0.6);
+  }
+}
+.travel-board .lg {
+  margin-top: 0.875rem;
+  padding-top: 0.75rem;
+  border-top: 0.0625rem solid var(--side);
+  display: grid;
+  gap: 0.5625rem;
+  font-size: 0.75rem;
+  color: var(--mute);
+}
+.travel-board .lg div {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+.travel-board .lg span {
+  font-size: 1.375rem;
+  width: 1.75rem;
+  text-align: center;
+}
+.travel-board .lg p {
+  margin: 0;
+  line-height: 1.35;
+}
+.travel-board .lg b {
+  color: var(--ink);
+  font-size: 0.8125rem;
+}
+.travel-board .sp {
+  animation: board-bob 1.6s ease-in-out infinite alternate;
+}
+@keyframes board-bob {
+  to {
+    transform: translateY(-0.3125rem);
+  }
+}
+.travel-board #board-bub {
+  position: fixed;
+  z-index: 41;
+  pointer-events: none;
+  left: 50%;
+  top: -2.75rem;
+  transform: translateX(-50%);
+  background: var(--yel);
+  color: #3b3000;
+  font-family: Jua, sans-serif;
+  padding: 0.375rem 0.875rem;
+  border-radius: 1rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: 0.2s;
+}
+.travel-board .slot.pick {
+  cursor: pointer;
+}
+.travel-board .slot.pick .top {
+  stroke: #2b9ac0;
+  stroke-width: 4;
+  fill: #fff3a8;
+  animation: board-pk 0.8s ease-in-out infinite alternate;
+}
+@keyframes board-pk {
+  to {
+    filter: drop-shadow(0 0 0.875rem #2b9ac0);
+  }
+}
+.travel-board .wv {
+  animation: board-wv 6s linear infinite;
+}
+@keyframes board-wv {
+  to {
+    stroke-dashoffset: -54;
+  }
+}
+.travel-board .spin {
+  animation: board-spin 18s linear infinite;
+}
+@keyframes board-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 1100px) {
+  .travel-board #board-left {
+    width: 13.125rem;
+  }
+  .travel-board #board-info,
+  .travel-board #board-yut {
+    width: 12.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .travel-board * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+#app-root:has(.travel-board) {
+  max-width: none;
+  padding: 0;
+  margin: 0;
+}
+.travel-board .card {
+  border: 0;
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+  width: 100%;
+}
+.travel-board .card.drag {
+  width: 14.75rem;
+}
+.travel-board #board-cnt {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+.travel-board #board-hint {
+  margin: 0.5rem 0 0;
+}
+.travel-board .board-delayed-star {
+  animation-delay: -4.5s;
+}
+.travel-board :focus-visible {
+  outline: 0.1875rem solid var(--sky);
+  outline-offset: 0.25rem;
+}
+.travel-board .card.selected {
+  outline: 0.1875rem solid var(--gold);
+}
+.travel-board #board-more,
+.travel-board #board-data-status {
+  font-size: 0.8125rem;
+  color: var(--mute);
+}
+.travel-board [hidden] {
+  display: none !important;
+}
+.travel-board .slot[role='button'] {
+  cursor: pointer;
+}
+.travel-board .board-wheel {
+  transform-origin: 19.375rem 18.875rem;
+}
+.travel-board .board-windmill {
+  transform-origin: 43.125rem 19rem;
+  animation-duration: 8s;
+}
+.travel-board .cloud-0 {
+  animation-delay: 0s;
+}
+.travel-board .cloud-1 {
+  animation-delay: -13s;
+}
+.travel-board .cloud-2 {
+  animation-delay: -26s;
+}
+
+.travel-board #board-thrown {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.travel-board .yut-flight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.5rem;
+  height: 7rem;
+  perspective: 37.5rem;
+  z-index: 1;
+}
+.travel-board .yut-stick {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.travel-board .yut-stick > i {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border: 0.0625rem solid #9a6335;
+}
+.travel-board .yut-flat {
+  border-radius: 0.3125rem;
+  background: repeating-linear-gradient(
+    90deg,
+    #f5d49c 0 0.25rem,
+    #e9be7e 0.25rem 0.3125rem,
+    #f9dfac 0.3125rem 0.5625rem
+  );
+  transform: translateZ(0.4375rem);
+  box-shadow: inset 0 0 0 0.125rem #f9dfac;
+}
+.travel-board .yut-round {
+  border-radius: 0.75rem / 0.5625rem;
+  background: linear-gradient(90deg, #58351d, #9d6235 45%, #714321 80%, #4d2c18);
+  transform: rotateY(180deg) translateZ(0.4375rem);
+  box-shadow: inset 0 0 0.5rem #402716;
+}
+.travel-board .yut-stick > .yut-edge {
+  left: 0.3125rem;
+  width: 0.875rem;
+  border-radius: 0.3125rem;
+  background: #ac7745;
+}
+.travel-board .yut-edge.left {
+  transform: rotateY(-90deg) translateZ(0.75rem);
+}
+.travel-board .yut-edge.right {
+  transform: rotateY(90deg) translateZ(0.75rem);
+}
+.travel-board .yut-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: #0005;
+  filter: blur(0.3125rem);
+}
+
+/* 마일리지 / 보상 */
+.travel-board #board-stats {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin: 0.5rem 0;
+  font-size: var(--fs-sm);
+}
+.travel-board #board-stats span {
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+/* 다녀와서 비워진 칸: 다시 오면 보상 */
+.travel-board .slot.visited {
+  opacity: 0.75;
+  filter: drop-shadow(0 0 0.375rem var(--palette-bronze));
+}

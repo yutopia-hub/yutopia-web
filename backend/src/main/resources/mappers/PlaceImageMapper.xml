@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.PlaceImageDao">
+    <resultMap id="imageResultMap" type="com.yutopia.model.dto.PlaceImage">
+        <id property="imageId" column="image_id"/>
+        <result property="placeId" column="place_id"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="thumbnailUrl" column="thumbnail_url"/>
+        <result property="caption" column="caption"/>
+        <result property="source" column="source"/>
+        <result property="licenseType" column="license_type"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.yutopia.model.dto.PlaceImage"
+            useGeneratedKeys="true" keyProperty="imageId" keyColumn="image_id">
+        INSERT INTO place_images (
+            place_id, image_url, thumbnail_url, caption, source, license_type, sort_order
+        ) VALUES (
+            #{placeId}, #{imageUrl}, #{thumbnailUrl,jdbcType=VARCHAR}, #{caption,jdbcType=VARCHAR},
+            #{source,jdbcType=VARCHAR}, #{licenseType,jdbcType=VARCHAR},
+            COALESCE(#{sortOrder,jdbcType=INTEGER}, 1)
+        )
+    </insert>
+
+    <select id="findByPlaceId" resultMap="imageResultMap">
+        SELECT image_id, place_id, image_url, thumbnail_url, caption, source, license_type, sort_order
+        FROM place_images WHERE place_id = #{placeId} ORDER BY sort_order, image_id
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM place_images WHERE image_id = #{imageId}
+    </delete>
+</mapper>

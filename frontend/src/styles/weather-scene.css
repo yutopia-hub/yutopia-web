@@ -1,0 +1,325 @@
+/* ---------- 날씨 장면 (현재 날씨 불러오기) ---------- */
+.ws {
+  --sky-a: #8fc8f0;
+  --sky-b: #d7ecfa;
+  --ws-ink: #1f2f3a;
+  position: relative;
+  min-height: 8.5rem;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, var(--sky-a), var(--sky-b));
+  color: var(--ws-ink);
+  box-shadow: var(--shadow-sm);
+  animation: ws-in 0.45s ease both;
+  transition: background 0.6s ease;
+}
+/* 날씨별 하늘색 */
+.ws[data-kind='cloudy'] {
+  --sky-a: #9fc3e0;
+  --sky-b: #e2ecf4;
+}
+.ws[data-kind='overcast'] {
+  --sky-a: #9aa7b3;
+  --sky-b: #cfd6dc;
+}
+.ws[data-kind='fog'] {
+  --sky-a: #b8c0c6;
+  --sky-b: #e3e7ea;
+}
+.ws[data-kind='rain'] {
+  --sky-a: #5d7488;
+  --sky-b: #9fb1be;
+  --ws-ink: #fff;
+}
+.ws[data-kind='thunder'] {
+  --sky-a: #2f3b4a;
+  --sky-b: #667587;
+  --ws-ink: #fff;
+}
+.ws[data-kind='snow'] {
+  --sky-a: #aab9cc;
+  --sky-b: #e8eef6;
+}
+/* 밤 */
+.ws[data-night='true'] {
+  --sky-a: #101a33;
+  --sky-b: #2b3a63;
+  --ws-ink: #fff;
+}
+.ws[data-night='true'][data-kind='rain'],
+.ws[data-night='true'][data-kind='thunder'] {
+  --sky-a: #0e1624;
+  --sky-b: #34425a;
+}
+.ws[data-night='true'][data-kind='snow'] {
+  --sky-a: #1a2540;
+  --sky-b: #46567a;
+}
+.ws[data-night='true'][data-kind='fog'],
+.ws[data-night='true'][data-kind='overcast'] {
+  --sky-a: #1b222c;
+  --sky-b: #3b4655;
+}
+
+.ws-sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ws-info {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: var(--spacing-md);
+  text-shadow: 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.18);
+}
+.ws-where {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  opacity: 0.9;
+}
+.ws-main {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+.ws-temp {
+  font-family: Jua, sans-serif;
+  font-size: 2.75rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.ws-label {
+  font-size: var(--fs-md);
+  font-weight: 700;
+}
+.ws-facts {
+  font-size: var(--fs-xs);
+  opacity: 0.92;
+}
+.ws-reason {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  backdrop-filter: blur(0.25rem);
+}
+
+/* 해 */
+.ws-sun {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff7c2 0%, #ffd54a 60%, #ffb300 100%);
+  box-shadow: 0 0 2rem 0.75rem rgba(255, 213, 74, 0.55);
+  animation: ws-pulse 3s ease-in-out infinite;
+}
+.ws-sun::before {
+  content: '';
+  position: absolute;
+  inset: -1.1rem;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 213, 74, 0.55) 0 6deg,
+    transparent 6deg 30deg
+  );
+  mask: radial-gradient(circle, transparent 45%, #000 46%, transparent 72%);
+  animation: ws-spin 24s linear infinite;
+}
+/* 달과 별 */
+.ws-moon {
+  position: absolute;
+  top: 0.875rem;
+  right: 1.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: #fdf6d8;
+  box-shadow:
+    inset -0.875rem -0.25rem 0 0 #e2d9b2,
+    0 0 1.5rem 0.25rem rgba(253, 246, 216, 0.4);
+}
+.ws-star {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0.1875rem;
+  height: 0.1875rem;
+  border-radius: 50%;
+  background: #fff;
+  animation: ws-twinkle var(--dur) ease-in-out var(--delay) infinite;
+}
+
+/* 구름 */
+.ws-cloud {
+  position: absolute;
+  top: var(--top);
+  left: 0;
+  width: var(--size);
+  height: calc(var(--size) * 0.38);
+  border-radius: 62rem;
+  background: rgba(255, 255, 255, var(--op));
+  filter: blur(0.0625rem);
+  animation: ws-drift var(--dur) linear var(--delay) infinite;
+}
+.ws-cloud::before,
+.ws-cloud::after {
+  content: '';
+  position: absolute;
+  bottom: 40%;
+  border-radius: 50%;
+  background: inherit;
+}
+.ws-cloud::before {
+  left: 18%;
+  width: 45%;
+  height: 130%;
+}
+.ws-cloud::after {
+  right: 14%;
+  width: 36%;
+  height: 100%;
+}
+.ws[data-kind='rain'] .ws-cloud,
+.ws[data-kind='thunder'] .ws-cloud {
+  background: rgba(70, 82, 96, 0.85);
+}
+.ws[data-kind='overcast'] .ws-cloud {
+  background: rgba(140, 150, 160, 0.9);
+}
+.ws[data-night='true'] .ws-cloud {
+  background: rgba(90, 104, 130, 0.7);
+}
+
+/* 비 */
+.ws-drop {
+  position: absolute;
+  top: -1.5rem;
+  left: var(--x);
+  width: 0.0625rem;
+  height: var(--len);
+  background: linear-gradient(transparent, rgba(220, 238, 255, 0.95));
+  transform: rotate(14deg);
+  animation: ws-rain var(--dur) linear var(--delay) infinite;
+}
+/* 눈 */
+.ws-flake {
+  position: absolute;
+  top: -1rem;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.9;
+  animation: ws-snow var(--dur) linear var(--delay) infinite;
+}
+/* 번개 */
+.ws-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: ws-flash 4.5s ease-in-out infinite;
+}
+/* 안개 */
+.ws-fog {
+  position: absolute;
+  top: var(--top);
+  left: -30%;
+  width: 160%;
+  height: 2.25rem;
+  border-radius: 62rem;
+  background: rgba(255, 255, 255, 0.5);
+  filter: blur(0.5rem);
+  animation: ws-fog var(--dur) ease-in-out var(--delay, 0s) infinite alternate;
+}
+
+@keyframes ws-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+  }
+}
+@keyframes ws-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ws-pulse {
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes ws-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes ws-drift {
+  from {
+    transform: translateX(-30%);
+  }
+  to {
+    transform: translateX(calc(var(--ws-w, 36rem)));
+  }
+}
+@keyframes ws-rain {
+  to {
+    transform: translate(2rem, 11rem) rotate(14deg);
+  }
+}
+@keyframes ws-snow {
+  25% {
+    margin-left: var(--sway);
+  }
+  75% {
+    margin-left: calc(var(--sway) * -1);
+  }
+  to {
+    transform: translateY(11rem);
+  }
+}
+@keyframes ws-flash {
+  0%,
+  86%,
+  100% {
+    opacity: 0;
+  }
+  88% {
+    opacity: 0.75;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  92% {
+    opacity: 0.55;
+  }
+}
+@keyframes ws-fog {
+  from {
+    transform: translateX(-6%);
+  }
+  to {
+    transform: translateX(6%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ws,
+  .ws * {
+    animation: none !important;
+  }
+}

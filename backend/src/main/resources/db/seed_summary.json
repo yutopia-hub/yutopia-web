@@ -1,0 +1,17 @@
+{
+  "source": "https://www.data.go.kr/data/15101578/openapi.do",
+  "generated_at_kst": "2026-11-13 14:51:30",
+  "places": 30,
+  "regions": 16,
+  "categories": 34,
+  "details": 30,
+  "images": 90,
+  "tags": 180,
+  "demo_members": 3,
+  "demo_favorites": 9,
+  "provinces": {
+    "서울특별시": 10,
+    "부산광역시": 10,
+    "제주특별자치도": 10
+  }
+}

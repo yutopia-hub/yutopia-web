@@ -1,0 +1,5 @@
+# Copy this file to application-local.properties (ignored by Git).
+# Set YUTOPIA_DB_USERNAME / YUTOPIA_DB_PASSWORD or enter your local values there.
+spring.datasource.url=jdbc:mysql://localhost:3306/yutopia?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+spring.datasource.username=${YUTOPIA_DB_USERNAME:ssafy}
+spring.datasource.password=${YUTOPIA_DB_PASSWORD:ssafy}

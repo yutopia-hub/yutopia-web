@@ -1,0 +1,29 @@
+# ---- 비밀 값 (절대 커밋 금지) ----
+.env
+.env.local
+.env.*.local
+**/application-local.properties
+**/application-test-local.properties
+
+# ---- frontend ----
+node_modules/
+dist/
+*.log
+
+# ---- backend ----
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+__pycache__/
+
+# ---- IDE / OS ----
+.idea/
+*.iml
+.vscode/*
+!.vscode/settings.json
+.classpath
+.project
+.settings/
+.factorypath
+.metadata/
+.DS_Store
+Thumbs.db

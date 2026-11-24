@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.MemberDao">
+    <resultMap id="memberResultMap" type="com.yutopia.model.dto.Member">
+        <id property="memberId" column="member_id"/>
+        <result property="email" column="email"/>
+        <result property="nickname" column="nickname"/>
+        <result property="passwordHash" column="password_hash"/>
+        <result property="role" column="role"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="memberColumns">
+        member_id, email, nickname, password_hash, role, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.yutopia.model.dto.Member"
+            useGeneratedKeys="true" keyProperty="memberId" keyColumn="member_id">
+        INSERT INTO members (email, nickname, password_hash, role)
+        VALUES (#{email}, #{nickname}, #{passwordHash}, COALESCE(#{role,jdbcType=VARCHAR}, 'USER'))
+    </insert>
+
+    <select id="findById" resultMap="memberResultMap">
+        SELECT <include refid="memberColumns"/>
+        FROM members WHERE member_id = #{memberId}
+    </select>
+
+    <select id="findByEmail" resultMap="memberResultMap">
+        SELECT <include refid="memberColumns"/>
+        FROM members WHERE email = #{email}
+    </select>
+
+    <update id="update" parameterType="com.yutopia.model.dto.Member">
+        UPDATE members
+        SET email = #{email}, nickname = #{nickname},
+            password_hash = #{passwordHash}, role = #{role}
+        WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM members WHERE member_id = #{memberId}
+    </delete>
+</mapper>

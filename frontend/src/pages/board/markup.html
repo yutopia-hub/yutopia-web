@@ -1,0 +1,190 @@
+<section class="travel-board" aria-label="나만의 여행 보드게임">
+  <div id="board-stage">
+    <svg
+      id="board-bg"
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      <defs>
+        <radialGradient id="board-sun-halo">
+          <stop stop-color="#fff1ad" stop-opacity=".65" />
+          <stop offset="1" stop-color="#fff1ad" stop-opacity="0" />
+        </radialGradient>
+        <radialGradient id="board-fog-gradient">
+          <stop stop-color="#edf5f6" stop-opacity=".45" />
+          <stop offset="1" stop-color="#edf5f6" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <g id="board-stars"></g>
+      <g class="sky-sun">
+        <circle cx="440" cy="110" r="116" fill="url(#board-sun-halo)" />
+        <circle cx="440" cy="110" r="40" fill="#ffdf7a" />
+      </g>
+      <g class="sky-sunset">
+        <circle cx="990" cy="270" r="150" fill="url(#board-sun-halo)" />
+        <circle cx="990" cy="270" r="55" fill="#ffc78f" />
+      </g>
+      <g class="sky-moon" transform="translate(440 110)">
+        <circle r="42" fill="#f6f0d2" />
+        <g fill="#e2dabc">
+          <circle cx="-16" cy="-14" r="8" />
+          <circle cx="20" cy="12" r="6" />
+          <circle cx="-7" cy="24" r="4" />
+        </g>
+      </g>
+      <g class="sky-clouds" fill="#fff">
+        <g class="sky-cloud cloud-a">
+          <ellipse cx="350" cy="180" rx="100" ry="22" />
+          <ellipse cx="320" cy="165" rx="45" ry="28" />
+          <ellipse cx="370" cy="164" rx="38" ry="24" />
+        </g>
+        <g class="sky-cloud cloud-b">
+          <ellipse cx="1040" cy="130" rx="94" ry="20" />
+          <ellipse cx="1020" cy="116" rx="42" ry="27" />
+        </g>
+        <g class="sky-cloud cloud-c">
+          <ellipse cx="770" cy="70" rx="82" ry="18" />
+          <ellipse cx="744" cy="57" rx="32" ry="24" />
+        </g>
+        <g class="sky-cloud cloud-d">
+          <ellipse cx="650" cy="235" rx="100" ry="16" />
+          <ellipse cx="625" cy="222" rx="42" ry="24" />
+        </g>
+      </g>
+      <g class="sky-fog">
+        <ellipse cx="230" cy="500" rx="240" ry="100" fill="url(#board-fog-gradient)" />
+        <ellipse cx="1190" cy="440" rx="230" ry="105" fill="url(#board-fog-gradient)" />
+      </g>
+    </svg>
+    <svg id="board-board" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet"></svg>
+    <svg
+      id="board-weather-effects"
+      viewBox="0 0 1000 640"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <defs>
+        <clipPath id="board-weather-clip"><ellipse cx="500" cy="350" rx="450" ry="250" /></clipPath>
+      </defs>
+    </svg>
+  </div>
+  <aside id="board-environment" aria-label="현재 시간과 날씨">
+    <span id="board-weather-icon" aria-hidden="true">◌</span>
+    <div class="environment-reading">
+      <div><time id="board-clock"></time><span id="board-weather-summary">날씨 확인 중</span></div>
+      <small
+        ><span id="board-weather-location">서울 기준</span> ·
+        <span id="board-weather-update">날씨를 불러오고 있어요</span></small
+      >
+    </div>
+    <div class="environment-actions">
+      <button type="button" id="board-locate">현재 위치 사용</button
+      ><button type="button" id="board-weather-refresh" aria-label="날씨 다시 불러오기">↻</button>
+    </div>
+    <a
+      href="https://open-meteo.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="weather-credit"
+      >Weather by Open-Meteo</a
+    >
+  </aside>
+  <div id="board-ready" data-i18n="">여행 준비 완료! 🎉</div>
+
+  <aside class="panel" id="board-left">
+    <div class="panel-head">
+      <h2 id="board-list-title" data-i18n="">내 여행 보따리</h2>
+      <button
+        type="button"
+        id="board-left-toggle"
+        aria-expanded="true"
+        aria-controls="board-left-body"
+        aria-label="보따리 패널 접기"
+        data-i18n-aria-label=""
+      ></button>
+    </div>
+    <div id="board-left-body">
+      <div class="board-source-switch" role="group" aria-label="여행지 목록 선택">
+        <button
+          type="button"
+          id="board-source-carrier"
+          aria-pressed="true"
+          aria-controls="board-list"
+        >
+          내 여행 보따리
+        </button>
+        <button
+          type="button"
+          id="board-source-recommended"
+          aria-pressed="false"
+          aria-controls="board-list"
+        >
+          추천 여행지
+        </button>
+      </div>
+      <p class="sub" data-i18n="">끌어다 놓거나 더블클릭해 빈 칸에 넣어보세요.</p>
+      <p class="sub" id="board-list-note" hidden></p>
+      <p id="board-data-status" role="status">보따리의 여행지를 불러오는 중입니다.</p>
+      <div id="board-list"></div>
+      <button type="button" class="btn" id="board-recommend-retry" hidden>
+        추천 다시 불러오기
+      </button>
+      <p id="board-more" hidden>
+        보따리에 여행지를 더 담아보세요. <a href="#/map" data-i18n="">여행지 탐색</a>
+      </p>
+    </div>
+  </aside>
+
+  <aside class="panel" id="board-info">
+    <h2>My Travel Board</h2>
+    <div id="board-cnt" class="sub"></div>
+    <div id="board-stats" aria-live="polite"></div>
+    <div class="bar"><i id="board-pg"></i></div>
+    <div class="row">
+      <button
+        class="btn pri"
+        id="board-save"
+        aria-label="보드 저장"
+        data-i18n=""
+        data-i18n-aria-label=""
+      >
+        보드 저장</button
+      ><button
+        class="btn"
+        id="board-reset"
+        aria-label="보드 초기화"
+        data-i18n=""
+        data-i18n-aria-label=""
+      >
+        보드 초기화
+      </button>
+    </div>
+    <div class="lg">
+      <div>
+        <span>🧳</span>
+        <p><b>START</b><br />여행의 출발점</p>
+      </div>
+      <div>
+        <span>🗝️</span>
+        <p><b>황금 열쇠 (2칸)</b><br />랜덤 이벤트 카드</p>
+      </div>
+      <div>
+        <span>✈️</span>
+        <p><b>공항</b><br />원하는 여행지로 바로 이동</p>
+      </div>
+    </div>
+  </aside>
+
+  <aside class="panel" id="board-yut">
+    <div id="board-res"></div>
+    <button id="board-roll" disabled aria-label="윷 던지기">🪵 윷 던지기</button>
+    <div class="sub" id="board-hint" data-i18n="">여행지 8곳을 모두 놓으면 시작할 수 있어요.</div>
+  </aside>
+  <div id="board-thrown" aria-hidden="true"></div>
+  <span id="board-bub" role="status" aria-live="polite"></span>
+  <div id="board-toast" role="status" aria-live="polite"></div>
+  <div id="board-modal" role="dialog" aria-modal="true" aria-label="황금 열쇠 이벤트" tabindex="-1">
+    <div class="flip"><div id="board-mc"></div></div>
+  </div>
+</section>

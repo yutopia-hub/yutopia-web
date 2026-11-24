@@ -1,0 +1,96 @@
+#app-footer {
+  background: var(--color-bg);
+}
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--spacing-md);
+}
+.form-links {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+.auth-page {
+  max-width: 30rem;
+  margin: var(--spacing-lg) auto;
+  display: grid;
+  gap: var(--spacing-md);
+}
+.auth-page form,
+.auth-page label {
+  display: grid;
+  gap: var(--spacing-sm);
+}
+.auth-page form {
+  gap: var(--spacing-md);
+}
+.auth-page input:not([type='checkbox']) {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+.auth-page .checkbox-label {
+  display: flex;
+  align-items: center;
+}
+.auth-page a {
+  color: var(--color-primary);
+}
+.auth-page a.btn-primary {
+  color: var(--color-bg);
+}
+.error {
+  color: var(--color-danger);
+}
+.error:empty {
+  display: none;
+}
+.hint {
+  color: var(--color-text-muted);
+}
+.profile {
+  display: grid;
+  gap: var(--spacing-sm);
+  overflow-wrap: anywhere;
+}
+.profile dt {
+  font-weight: bold;
+}
+.withdrawal {
+  border-top: 0.0625rem solid var(--color-border);
+  padding-top: var(--spacing-md);
+}
+.withdrawal summary {
+  cursor: pointer;
+  color: var(--color-danger);
+}
+.withdrawal p,
+#reset-result {
+  margin-block: var(--spacing-md);
+}
+.btn-danger {
+  background: var(--color-danger);
+  color: var(--color-bg);
+  border-color: var(--color-danger);
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+input:focus-visible,
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 0.125rem solid var(--color-primary);
+  outline-offset: 0.125rem;
+}
+
+.auth-page input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+.field-error {
+  margin-top: calc(-1 * var(--spacing-sm));
+}

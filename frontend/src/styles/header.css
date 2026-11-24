@@ -1,0 +1,206 @@
+#app-header {
+  --header-brown: var(--color-text);
+  --header-muted: var(--color-text-muted);
+  --header-orange: var(--color-primary);
+  --header-active: var(--color-accent-soft);
+  --header-hover: var(--color-surface-alt);
+  --header-green: var(--color-accent);
+  --header-border: var(--color-border);
+  --header-pill-radius: 62.4375rem;
+  --header-icon-size: 1.125rem;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-shrink: 0;
+  background: var(--color-bg);
+  border-bottom: none;
+}
+#app-header .nav {
+  height: auto;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md) var(--spacing-lg);
+  background: transparent;
+}
+#app-header .nav-links,
+#app-header .nav-auth {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+#app-header .nav-links {
+  position: relative;
+}
+#app-header .nav-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--header-pill-radius);
+  color: var(--header-brown);
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+#app-header .nav-tab:not(.nav-brand):hover {
+  background: var(--header-hover);
+}
+#app-header .nav-tab:not(.nav-brand).is-active {
+  background: var(--header-active);
+  color: var(--header-orange);
+  font-weight: 700;
+}
+#app-header .nav-logo {
+  width: 8.75rem;
+  height: auto;
+  display: block;
+}
+#app-header .nav-brand {
+  padding: 0;
+  margin-right: var(--spacing-lg);
+  border-radius: 0;
+  flex-shrink: 0;
+}
+#app-header .nav-icon {
+  width: var(--header-icon-size);
+  height: var(--header-icon-size);
+  display: inline-block;
+  flex-shrink: 0;
+}
+#app-header .nav-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#app-header .nav-indicator {
+  display: none;
+}
+#app-header .nav-auth {
+  margin-left: auto;
+  gap: var(--spacing-md);
+  color: var(--header-muted);
+  font-size: 0.9rem;
+}
+#app-header .nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+#app-header .nav-user .nav-icon {
+  color: var(--header-green);
+}
+#app-header .nav-user-name {
+  max-width: 10rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#app-header .nav-auth .btn {
+  min-height: 2.375rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  color: var(--header-brown);
+  border: 0.0625rem solid var(--header-border);
+  border-radius: var(--header-pill-radius);
+  font-weight: 500;
+}
+#app-header .nav-auth .btn:hover:not(:disabled),
+#app-header .nav-auth > a:hover {
+  background: var(--header-hover);
+  color: var(--header-orange);
+}
+#app-header .nav-auth > a {
+  padding: var(--spacing-sm);
+  border-radius: var(--header-pill-radius);
+  color: var(--header-brown);
+}
+#app-header .nav-auth .btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+#app-header :is(a, button):focus-visible {
+  outline: 0.125rem solid var(--header-green);
+  outline-offset: 0.125rem;
+}
+#header-error {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-inline: var(--spacing-md);
+}
+@media (max-width: 640px) {
+  #app-header .nav-logo {
+    width: 8.125rem;
+  }
+  #app-header .nav-links {
+    width: 100%;
+    gap: var(--spacing-sm);
+  }
+  #app-header .nav-brand {
+    flex-basis: 100%;
+    margin: 0 0 var(--spacing-xs);
+    justify-content: flex-start;
+  }
+  #app-header .nav-tab:not(.nav-brand) {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+    font-size: 0.9rem;
+  }
+  #app-header .nav-auth {
+    justify-content: flex-end;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #app-header .nav-tab {
+    transition: none;
+  }
+}
+
+/* 언어 / 테마 토글 */
+#app-header .nav-prefs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+#app-header .nav-side {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-left: auto;
+}
+#app-header .nav-pref {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0.0625rem solid var(--header-border);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--header-brown);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+#app-header .nav-pref:hover {
+  background: var(--header-hover);
+  transform: rotate(-8deg);
+}
+#app-header .nav-pref svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}

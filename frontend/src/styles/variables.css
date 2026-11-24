@@ -1,0 +1,103 @@
+/*
+ * 디자인 토큰. 팔레트: #B08D57(브론즈) #C9B37E(샌드) #2F3E46(슬레이트) #E0D2B2(크림) #6B4F3A(브라운)
+ * - 크기는 전부 rem. 루트 글자 크기가 화면 폭에 따라 14px~17px로 자동 조절되므로
+ *   rem 으로 만든 컴포넌트/글자/아이콘이 함께 줄고 늘어난다.
+ * - 다크 모드: <html data-theme="dark"> (없으면 OS 설정을 따름)
+ */
+html {
+  font-size: clamp(87.5%, 0.78rem + 0.32vw, 106.25%);
+}
+
+:root {
+  color-scheme: light;
+
+  /* 팔레트 원색 */
+  --palette-bronze: #b08d57;
+  --palette-sand: #c9b37e;
+  --palette-slate: #2f3e46;
+  --palette-cream: #e0d2b2;
+  --palette-brown: #6b4f3a;
+
+  /* 의미 토큰 (라이트) */
+  --color-bg: #fffdf8;
+  --color-bg-muted: #f6f0e3;
+  --color-surface: #fffdf8;
+  --color-surface-alt: #efe6d2;
+  --color-text: #2f3e46;
+  --color-text-muted: #6e6656;
+  --color-border: #e0d2b2;
+  --color-primary: #6b4f3a;
+  --color-primary-dark: #4f3a2a;
+  --color-on-primary: #fffdf8;
+  --color-accent: #b08d57;
+  --color-accent-soft: #f1e7d1;
+  --color-danger: #b4432f;
+  --color-success: #4d6b4f;
+  --shadow-sm: 0 0.125rem 0.5rem rgba(47, 62, 70, 0.08);
+  --shadow-md: 0 0.5rem 1.5rem rgba(47, 62, 70, 0.12);
+
+  /* 간격 / 모서리 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.375rem;
+  --radius-pill: 999rem;
+
+  /* 유동 글자 크기 */
+  --fs-xs: clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem);
+  --fs-sm: clamp(0.82rem, 0.8rem + 0.12vw, 0.9rem);
+  --fs-md: 1rem;
+  --fs-lg: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  --fs-xl: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  --fs-2xl: clamp(1.6rem, 1.2rem + 1.6vw, 2.25rem);
+
+  --max-width: 72rem;
+  --nav-underline-height: 0.125rem;
+  --header-height: 3.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-bg: #1d272c;
+    --color-bg-muted: #172024;
+    --color-surface: #243238;
+    --color-surface-alt: #2f3e46;
+    --color-text: #efe7d6;
+    --color-text-muted: #b9ad94;
+    --color-border: #3d4f58;
+    --color-primary: #c9b37e;
+    --color-primary-dark: #e0d2b2;
+    --color-on-primary: #1d272c;
+    --color-accent: #c9b37e;
+    --color-accent-soft: #34413f;
+    --color-danger: #e08a74;
+    --color-success: #9cc39e;
+    --shadow-sm: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #1d272c;
+  --color-bg-muted: #172024;
+  --color-surface: #243238;
+  --color-surface-alt: #2f3e46;
+  --color-text: #efe7d6;
+  --color-text-muted: #b9ad94;
+  --color-border: #3d4f58;
+  --color-primary: #c9b37e;
+  --color-primary-dark: #e0d2b2;
+  --color-on-primary: #1d272c;
+  --color-accent: #c9b37e;
+  --color-accent-soft: #34413f;
+  --color-danger: #e08a74;
+  --color-success: #9cc39e;
+  --shadow-sm: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.4);
+}

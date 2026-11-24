@@ -1,0 +1,369 @@
+/* 맵 페이지: 헤더 아래 화면 전체를 지도로 쓴다 */
+.map-page {
+  position: fixed;
+  inset: var(--header-height) 0 0 0;
+  overflow: hidden;
+  /* hidden은 포커스 시 내부가 스크롤돼 지도가 밀려 올라간다. clip은 스크롤 자체를 막는다. */
+  overflow: clip;
+  background: var(--color-surface-alt);
+}
+
+.map-canvas {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  background: var(--color-surface-alt);
+}
+
+.map-canvas__notice {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(26.25rem, calc(100% - 2rem));
+  padding: var(--spacing-md);
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* ---------- 하단 검색 시트 (가운데 아래에서 위로 올라옴) ---------- */
+.map-sheet {
+  --sheet-handle-height: 3.5rem;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: min(32.5rem, calc(100% - 1.5rem));
+  max-height: min(70vh, 40rem);
+  background: var(--color-bg);
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -0.375rem 1.5rem rgba(47, 62, 70, 0.18);
+  transform: translate(-50%, calc(100% - var(--sheet-handle-height)));
+  transition: transform 0.28s ease;
+}
+
+.map-sheet.is-open {
+  transform: translate(-50%, 0);
+}
+
+.map-sheet__handle {
+  flex: 0 0 var(--sheet-handle-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  width: 100%;
+  border: 0;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.map-sheet__grip {
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: 62.4375rem;
+  background: var(--color-border);
+}
+
+.map-sheet__handle-label {
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-sheet__body {
+  overflow-y: auto;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  /* 닫혀 있을 때 안쪽 입력창이 탭 포커스를 받지 않게 숨긴다 (닫히는 애니메이션 후에) */
+  visibility: hidden;
+  transition: visibility 0s linear 0.28s;
+}
+
+.map-sheet.is-open .map-sheet__body {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.map-sheet[data-view='search'] .map-sheet__summary,
+.map-sheet[data-view='summary'] .map-sheet__search,
+.map-sheet:not([data-view='course']) .map-sheet__course,
+.map-sheet[data-view='course'] .map-sheet__search,
+.map-sheet[data-view='course'] .map-sheet__summary {
+  display: none;
+}
+
+.map-search-form {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.map-search-form input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 0.0625rem solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.map-sheet__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.map-sheet__status {
+  margin: var(--spacing-sm) 0;
+  font-size: 0.875rem;
+}
+
+.map-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.map-result {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-result:hover {
+  background: var(--color-bg-muted);
+}
+
+.map-result__thumb {
+  flex: 0 0 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-muted);
+}
+
+.map-result__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-result__thumb.is-fallback,
+.place-pin__thumb.is-fallback,
+.place-summary__image.is-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: var(--color-accent-soft);
+}
+
+.map-result__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.map-result__text strong,
+.map-result__text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-result__text span {
+  font-size: 0.8125rem;
+}
+
+/* ---------- 이미지 핀: hover 시 이미지까지 통째로 확대 ---------- */
+.place-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transition: transform 0.18s ease;
+}
+
+.place-pin:hover,
+.place-pin:focus-visible {
+  transform: scale(1.4);
+}
+
+.place-pin__thumb {
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border: 0.1875rem solid var(--color-surface);
+  border-radius: 50%;
+  box-shadow: 0 0.125rem 0.5rem rgba(47, 62, 70, 0.35);
+  background: var(--color-bg);
+}
+
+.place-pin__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* 핀 꼬리 */
+.place-pin::after {
+  content: '';
+  margin-top: -0.125rem;
+  border-top: 0.5625rem solid var(--color-surface);
+  border-right: 0.4375rem solid transparent;
+  border-left: 0.4375rem solid transparent;
+  filter: drop-shadow(0 0.125rem 0.0625rem rgba(47, 62, 70, 0.25));
+}
+
+.place-pin.is-selected .place-pin__thumb {
+  border-color: var(--color-primary);
+}
+
+.place-pin.is-selected::after {
+  border-top-color: var(--color-primary);
+}
+
+/* 보따리에 담긴 핀 표시 */
+.place-pin.is-carried::before {
+  content: '';
+  position: absolute;
+  top: -0.125rem;
+  right: -0.125rem;
+  z-index: 1;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 0.125rem solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.place-pin__label {
+  position: absolute;
+  bottom: calc(100% + 0.375rem);
+  left: 50%;
+  max-width: 11.25rem;
+  padding: 0.125rem 0.5rem;
+  overflow: hidden;
+  border-radius: 62.4375rem;
+  background: rgba(47, 62, 70, 0.9);
+  color: #fffdf8;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 0.15s ease;
+}
+
+.place-pin:hover .place-pin__label,
+.place-pin:focus-visible .place-pin__label,
+.place-pin.is-selected .place-pin__label {
+  opacity: 1;
+}
+
+/* ---------- 핀 클릭 시 시트에 뜨는 요약 카드 ---------- */
+.place-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.place-summary__back {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.place-summary__back:hover {
+  color: var(--color-primary);
+}
+
+.place-summary__main {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.place-summary__image {
+  flex: 0 0 7.5rem;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--color-bg-muted);
+  font-size: 2.25rem;
+}
+
+.place-summary__info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.place-summary__info h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.place-summary__facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.place-summary__facts div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--spacing-sm);
+}
+
+.place-summary__facts dt {
+  color: var(--color-text-muted);
+}
+
+.place-summary__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 420px) {
+  .place-summary__main {
+    flex-direction: column;
+  }
+
+  .place-summary__image {
+    width: 100%;
+    height: 10rem;
+  }
+}

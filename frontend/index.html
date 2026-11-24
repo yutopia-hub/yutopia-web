@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <title>윷토피아 YUTOPIA</title>
+    <script>
+      // 저장된 테마/언어를 첫 페인트 전에 적용해 깜빡임을 막는다
+      try {
+        var savedTheme = localStorage.getItem('travel-notice:theme');
+        if (savedTheme === 'dark' || savedTheme === 'light')
+          document.documentElement.dataset.theme = savedTheme;
+        var savedLang = localStorage.getItem('travel-notice:lang');
+        if (savedLang === 'en' || savedLang === 'ko') document.documentElement.lang = savedLang;
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="/src/styles/reset.css" />
+    <link rel="stylesheet" href="/src/styles/variables.css" />
+    <link rel="stylesheet" href="/src/styles/global.css" />
+    <link rel="stylesheet" href="/src/styles/board.css" />
+    <link rel="stylesheet" href="/src/styles/board-environment.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <header id="app-header"></header>
+      <main id="app-root"></main>
+      <footer id="app-footer"></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

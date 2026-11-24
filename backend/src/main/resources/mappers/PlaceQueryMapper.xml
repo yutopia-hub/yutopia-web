@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yutopia.model.dao.PlaceQueryDao">
+
+    <!-- 목록·상세·찜 공통 SELECT 절. TourAPI 원본 값은 place_details.intro_json 에서 꺼낸다. -->
+    <sql id="viewColumns">
+        p.place_id, p.provider, p.external_id, p.title, p.address, p.detail_address,
+        p.latitude, p.longitude, p.place_url,
+        JSON_UNQUOTE(JSON_EXTRACT(d.intro_json, '$.contentTypeId'))        AS content_type_id,
+        JSON_UNQUOTE(JSON_EXTRACT(d.intro_json, '$.classification.level1')) AS cat1,
+        JSON_UNQUOTE(JSON_EXTRACT(d.intro_json, '$.classification.level2')) AS cat2,
+        JSON_UNQUOTE(JSON_EXTRACT(d.intro_json, '$.classification.level3')) AS cat3,
+        area.region_id   AS area_id,
+        area.region_name AS area_name,
+        c.category_name,
+        (SELECT i.image_url FROM place_images i
+          WHERE i.place_id = p.place_id ORDER BY i.sort_order LIMIT 1) AS image,
+        (SELECT COALESCE(i.thumbnail_url, i.image_url) FROM place_images i
+          WHERE i.place_id = p.place_id ORDER BY i.sort_order LIMIT 1) AS thumbnail,
+        d.tel, d.`setting`, d.pet_allowed,
+        (SELECT GROUP_CONCAT(t.tag ORDER BY t.tag SEPARATOR '|') FROM place_tags t
+          WHERE t.place_id = p.place_id) AS tags
+    </sql>
+
+    <sql id="viewJoins">
+        FROM places p
+        LEFT JOIN place_details d ON d.place_id = p.place_id
+        LEFT JOIN place_categories c ON c.category_id = p.category_id
+        LEFT JOIN regions r ON r.region_id = p.region_id
+        LEFT JOIN regions area ON area.region_id = COALESCE(r.parent_id, r.region_id)
+    </sql>
+
+    <select id="search" resultType="com.yutopia.model.dto.PlaceView">
+        SELECT <include refid="viewColumns"/>
+        <include refid="viewJoins"/>
+        <where>
+            p.is_active = TRUE
+            <if test="keyword != null and keyword != ''">
+                AND p.title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+            <if test="areaId != null">
+                AND area.region_id = #{areaId}
+            </if>
+        </where>
+        ORDER BY p.title, p.place_id
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="findDetail" resultType="com.yutopia.model.dto.PlaceView">
+        SELECT <include refid="viewColumns"/>,
+               d.overview, d.homepage_url, d.intro_json
+        <include refid="viewJoins"/>
+        WHERE p.external_id = #{externalId}
+        ORDER BY p.provider = 'TOUR_API' DESC, p.place_id
+        LIMIT 1
+    </select>
+
+    <select id="findFavorites" resultType="com.yutopia.model.dto.PlaceView">
+        SELECT <include refid="viewColumns"/>, f.memo, f.created_at AS added_at
+        FROM favorites f
+        JOIN places p ON p.place_id = f.place_id
+        LEFT JOIN place_details d ON d.place_id = p.place_id
+        LEFT JOIN place_categories c ON c.category_id = p.category_id
+        LEFT JOIN regions r ON r.region_id = p.region_id
+        LEFT JOIN regions area ON area.region_id = COALESCE(r.parent_id, r.region_id)
+        WHERE f.member_id = #{memberId}
+        ORDER BY f.created_at, p.place_id
+    </select>
+
+    <select id="findFavorite" resultType="com.yutopia.model.dto.PlaceView">
+        SELECT <include refid="viewColumns"/>, f.memo, f.created_at AS added_at
+        FROM favorites f
+        JOIN places p ON p.place_id = f.place_id
+        LEFT JOIN place_details d ON d.place_id = p.place_id
+        LEFT JOIN place_categories c ON c.category_id = p.category_id
+        LEFT JOIN regions r ON r.region_id = p.region_id
+        LEFT JOIN regions area ON area.region_id = COALESCE(r.parent_id, r.region_id)
+        WHERE f.member_id = #{memberId} AND p.external_id = #{externalId}
+        LIMIT 1
+    </select>
+</mapper>
