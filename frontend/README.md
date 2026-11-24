@@ -6,7 +6,7 @@
 한국관광공사 **TourAPI**, **기상청/OpenWeatherMap**, **카카오맵**을 엮은 놀이형 여행 계획 서비스입니다.
 SSAFY 관통 프로젝트 6팀 · **Vanilla JS + Vite** · Algorithm PJT(4회차) 적용
 
-### 🔗 배포: **[yutopia-zeta.vercel.app](https://yutopia-zeta.vercel.app/#/board)**
+### 🔗 배포: **[yutopia-web.vercel.app](https://yutopia-web.vercel.app/#/board)**
 
 ![윷판](docs/screenshots/01-board.png)
 

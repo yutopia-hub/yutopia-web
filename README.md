@@ -5,7 +5,7 @@
 
 SSAFY 관통 프로젝트 6팀 · **Vanilla JS + Vite** 프론트엔드 + **Spring Boot + MyBatis** 백엔드
 
-🔗 배포(프론트): **[yutopia-zeta.vercel.app](https://yutopia-zeta.vercel.app/#/board)**
+🔗 배포(프론트): **[yutopia-web.vercel.app](https://yutopia-web.vercel.app/#/board)**
 
 ![윷판](frontend/docs/screenshots/01-board.png)
 
