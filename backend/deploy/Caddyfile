@@ -1,0 +1,5 @@
+# HTTPS 인증서(Let's Encrypt)는 Caddy 가 자동 발급·갱신한다. setup.sh 가 __DOMAIN__ 을 채운다.
+__DOMAIN__ {
+	encode gzip
+	reverse_proxy localhost:8080
+}

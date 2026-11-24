@@ -1,0 +1,19 @@
+[Unit]
+Description=YUTOPIA backend (Spring Boot)
+After=network.target mysql.service
+Wants=mysql.service
+
+[Service]
+User=yutopia
+Group=yutopia
+WorkingDirectory=/opt/yutopia
+EnvironmentFile=/etc/yutopia/yutopia.env
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -jar /opt/yutopia/yutopia.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
