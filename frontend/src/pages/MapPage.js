@@ -18,6 +18,10 @@ import {
   taxiLabel,
 } from '../components/AiCourseModal.js';
 import { mountCarrierWidget } from '../components/CarrierWidget.js';
+import { mountYutoChatWidget } from '../components/YutoChatWidget.js';
+import { yutoChatApi } from '../api/yutoChatApi.js';
+import { createYutoChatSession } from '../api/yutoChatSession.js';
+import { getItem } from '../utils/storage.js';
 import { escapeHtml, nl2br } from '../utils/format.js';
 import { on } from '../utils/dom.js';
 import { navigate } from '../router/router.js';
@@ -78,6 +82,17 @@ export async function MapPage({ keyword = '' } = {}) {
   `;
 }
 
+MapPage.mount = (root) => () => {
+  const view = activeView;
+  if (!view || !root.contains(view.root)) return;
+  activeView = null;
+  view.closeCourseModal?.();
+  view.yutoWidget?.dispose();
+  view.yutoSessions.forEach((session) => session.dispose({ deleteConversation: true }));
+  view.yutoSessions.clear();
+  view.unsubscribeCarrier?.();
+};
+
 async function initMapPage(initialKeyword) {
   const root = document.querySelector('.map-page');
   if (!root) return;
@@ -94,16 +109,23 @@ async function initMapPage(initialKeyword) {
     searchSeq: 0,
     course: null,
     courseOverlays: [],
+    yutoByCourse: new WeakMap(),
+    yutoSessions: new Set(),
+    yutoWidget: null,
   };
   activeView = view;
   bindSheetEvents(view);
   mountCarrierWidget(root, {
     onLocate: (item) => focusPlace(view, item),
-    onAiCourse: () =>
-      openAiCourseModal({
+    onAiCourse: () => {
+      view.closeCourseModal = openAiCourseModal({
         onShowOnMap: (course) => showCourse(view, course),
         onCarry: (course) => carryCourse(view, course),
-      }),
+        getYutoSession: (course) => getYutoSession(view, course),
+        onDiscardCourse: (course) => { if (view.course !== course) releaseYutoCourse(view, course); },
+        onYutoLogin: (course) => mapStore.setState({ yutoReturnCourse: course }),
+      });
+    },
   });
 
   const unsubscribe = carrierStore.subscribe(() => {
@@ -113,10 +135,15 @@ async function initMapPage(initialKeyword) {
     }
     syncCarrier(view);
   });
+  view.unsubscribeCarrier = unsubscribe;
 
   // 상세에서 돌아온 경우(URL에 검색어 있음)는 결과 목록을 펼쳐서 복원하고,
   // 그냥 들어온 경우는 시트를 닫은 채 기본 검색 결과를 지도에 핀으로만 띄운다.
-  if (initialKeyword) {
+  const returnCourse = mapStore.getState().yutoReturnCourse;
+  if (returnCourse && !initialKeyword) {
+    mapStore.setState({ yutoReturnCourse: null });
+    showCourse(view, returnCourse);
+  } else if (initialKeyword) {
     setSheetOpen(view, true);
     runSearch(view, initialKeyword);
   } else {
@@ -136,7 +163,8 @@ async function initMapPage(initialKeyword) {
     });
     keepMapFitted(view.map, container);
     // 지도 로딩보다 검색이 먼저 끝났을 수 있으니 한 번 더 그린다.
-    renderPins(view);
+    if (view.course) drawCourse(view);
+    else renderPins(view);
   } catch (err) {
     if (isActive(view)) {
       root.querySelector('#kakao-map').innerHTML =
@@ -539,8 +567,34 @@ function removeCourseOverlays(view) {
   view.courseOverlays = [];
 }
 
+function getYutoSession(view, course) {
+  let session = view.yutoByCourse.get(course);
+  if (!session) {
+    // Use the same credential source as http.js, including changes made in another tab.
+    session = createYutoChatSession(course, {
+      api: yutoChatApi, getIdentity: () => ({ user: getItem('user'), token: getItem('token') }),
+    });
+    view.yutoByCourse.set(course, session);
+    view.yutoSessions.add(session);
+  }
+  return session;
+}
+
+function releaseYutoCourse(view, course) {
+  const session = view.yutoByCourse.get(course);
+  if (!session) return;
+  session.dispose({ deleteConversation: true });
+  view.yutoByCourse.delete(course);
+  view.yutoSessions.delete(session);
+}
+
 function showCourse(view, course) {
+  view.yutoWidget?.dispose();
+  if (view.course && view.course !== course) releaseYutoCourse(view, view.course);
   view.course = course;
+  view.yutoWidget = mountYutoChatWidget(view.root, {
+    session: getYutoSession(view, course), onLogin: () => mapStore.setState({ yutoReturnCourse: course }),
+  });
   setSelectedPin(view, null);
   // 검색 핀은 잠시 내리고 코스 핀만 보여준다
   view.pins.forEach(({ overlay }) => overlay.setMap(null));
@@ -670,6 +724,9 @@ function renderCoursePanel(view, message = '') {
 }
 
 function clearCourse(view, { keepPanel = false } = {}) {
+  view.yutoWidget?.dispose();
+  view.yutoWidget = null;
+  if (view.course) releaseYutoCourse(view, view.course);
   removeCourseOverlays(view);
   view.course = null;
   view.sheet.querySelector('.map-sheet__course').innerHTML = '';

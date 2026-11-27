@@ -32,11 +32,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
-    /** 로그인 필요 경로: 내 정보·찜, 로그아웃 */
+    /** 로그인 필요 경로: 내 정보·찜, 로그아웃, 코스별 유토 대화 */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/api/members/me", "/api/members/me/**", "/api/auth/logout");
+                .addPathPatterns("/api/members/me", "/api/members/me/**", "/api/auth/logout", "/api/ai/yuto/**");
     }
 
     @Override

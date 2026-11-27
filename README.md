@@ -95,5 +95,5 @@ yutopia/
 
 | 대상 | 명령 | 결과 |
 | --- | --- | --- |
-| 프론트 | `npm run lint && npm test && npm run build` | 단위 테스트 54/54 |
+| 프론트 | `npm run lint && npm test && npm run build` | 단위 테스트 68/68 (유토 14개 포함) |
 | 백엔드 | `./mvnw test` (실제 MySQL `yutopia_test`) | DAO 60 + API 흐름 4 + 컨텍스트 1 = **65/65** |

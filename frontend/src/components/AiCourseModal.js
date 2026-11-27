@@ -5,6 +5,7 @@ import { weatherProfile } from '../algorithm/weatherPolicy.js';
 import { weatherSceneHtml, weatherIcon } from './WeatherScene.js';
 import { escapeHtml } from '../utils/format.js';
 import { t, getLang } from '../i18n/i18n.js';
+import { mountYutoChatWidget } from './YutoChatWidget.js';
 import '../styles/ai-course.css';
 
 /* ---------- 공용 표시 함수 (모달과 지도 시트에서 같이 씀) ---------- */
@@ -89,7 +90,10 @@ function openDialog(className, labelledBy) {
   const dialog = backdrop.firstElementChild;
 
   const listeners = new Set();
+  let isClosed = false;
   const close = () => {
+    if (isClosed) return;
+    isClosed = true;
     document.removeEventListener('keydown', onKey);
     window.removeEventListener('hashchange', close);
     backdrop.remove();
@@ -140,9 +144,11 @@ let lastInput = { region: '', categories: [] };
 /**
  * @param {{ onShowOnMap: (course) => void, onCarry: (course) => void }} handlers
  */
-export function openAiCourseModal({ onShowOnMap, onCarry }) {
-  const { dialog, close } = openDialog('ai-modal--course', 'ai-course-title');
+export function openAiCourseModal({ onShowOnMap, onCarry, getYutoSession, onDiscardCourse, onYutoLogin }) {
+  const { dialog, close, onClose } = openDialog('ai-modal--course', 'ai-course-title');
   let course = null;
+  let yutoWidget = null;
+  let retainCourse = false;
   // 지금 화면에 불러온 날씨 (지역을 바꾸면 다시 불러와야 한다)
   let loadedWeather = null;
   let requestSeq = 0;
@@ -151,8 +157,18 @@ export function openAiCourseModal({ onShowOnMap, onCarry }) {
     closed = true;
     close();
   };
+  onClose(() => {
+    closed = true;
+    requestSeq++;
+    yutoWidget?.dispose();
+    if (course && !retainCourse) onDiscardCourse?.(course);
+  });
 
   function renderForm(error = '') {
+    yutoWidget?.dispose();
+    yutoWidget = null;
+    dialog.classList.remove('has-yuto');
+    if (course) { onDiscardCourse?.(course); course = null; }
     dialog.innerHTML = `
       <header class="ai-modal__head">
         <h2 id="ai-course-title">✨ ${t('AI 코스 추천')}</h2>
@@ -262,10 +278,17 @@ export function openAiCourseModal({ onShowOnMap, onCarry }) {
         <button type="button" class="btn btn-primary" data-act="carry">${t('보따리에 담기')}</button>
       </div>
     `;
+    if (getYutoSession) {
+      dialog.classList.add('has-yuto');
+      yutoWidget = mountYutoChatWidget(dialog, {
+        session: getYutoSession(course), placement: 'modal', onLogin: () => onYutoLogin?.(course),
+      });
+    }
     dialog.focus();
   }
 
   dialog.addEventListener('submit', async (event) => {
+    if (!event.target.matches('.ai-course__form')) return;
     event.preventDefault();
     const data = new FormData(event.target);
     const region = String(data.get('region') ?? '').trim();
@@ -292,6 +315,7 @@ export function openAiCourseModal({ onShowOnMap, onCarry }) {
     else if (act === 'weather') loadWeather();
     else if (act === 'retry') renderForm();
     else if (act === 'map') {
+      retainCourse = true;
       dialogClose();
       onShowOnMap(course);
     } else if (act === 'carry') {
@@ -301,6 +325,7 @@ export function openAiCourseModal({ onShowOnMap, onCarry }) {
   });
 
   renderForm();
+  return close;
 }
 
 /** "이 코스의 장소 N곳을 보따리에 담을까요?" → 예 이면 true */
